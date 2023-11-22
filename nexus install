@@ -1,1 +1,58 @@
+launch the instance with port number 8081 and http htpps ssh all traffic (sg)
+t2.micro 2cpu 4gb ram configuration before start ec2 instance
+1. sudo su
+2. cd /opt
+3. wget https://download.sonatype.com/nexus/3/nexus-3.44.0-01-unix.tar.gz
+4. tar -xvf nexus-3.44.0-01-unix.tar.gz
+5. yum install java-1.8.0* -y
+6. useradd nexus and give permissions as 777
+7. passwd nexus
+8. visudo (give root privilege to nexus i.e., “nexus ALL=(ALL) NOPASSWD:ALL “)
+9. ll
+10. chown -R nexus:nexus sonatype-work/ nexus-3.44.0-01
+11. mv nexus-3.44.0-01 nexus
+12. chmod 777 nexus sonatype-work/
+13. ll
+14. cd nexus/
+15. ls
+16. cd bin/
+17. vi nexus.rc (give the user you have created and remove ‘#’) (in “ ”- > “nexus(username we have created”)
+./nexus start
+Once Nexus is successfully installed, you can access it in the browser by URL - http://public_dns_name:8081
+Click on Sign in link
+user name is admin and password can be found by executing below command:
+sudo cat /opt/sonatype-work/nexus3/admin.password
+
+Copy the password and click sign in.
+Now setup admin password as admin123 (ur wish)
+and after that goto jenkins:>install nexus artifact uploader plugin 
+go to manage jenkins> credentials>add credentials>select user name with passwd>give username and passwd (nexus app credentials)
+>give id u r wish  (name =nexus credentais)>description same as id> save
+and now we have to create a nexus repository : follow the steps:
+goto nexus app >in setting>repository> create repository>select mave2 hosted>give name>release>permissive>inline>
+>allow redeploy>create repository>copy repository url
+and goto jenkins>in pipeline syntax >select nexus artifact uploader>
+select nexus version as : nexus3 > http> give nexus app url> credentials select nexus> group id will be in pom.xml file>
+>verion in pom.xml >repository as nexus repo name >add>artifact id will be pom.xml file>type warr or jar>classifer noneed>give location where war or jar is created(ex:target/1.0.snampshot.jar)
+pipeline will be generated
+some times 1.0 snapshot will not work then chage it to 0.1
+example:
+                  nexusArtifactUploader artifacts: [
+                       [
+                            artifactId: 'new', 
+                            classifier: '', 
+                            file: "target/new-1.0-SNAPSHOT.jar", 
+                            type: 'jar'
+                       ]
+                  ], 
+                  credentialsId: 'nexus3', 
+                  groupId: 'com.devops', 
+                  nexusUrl: '3.25.65.76', 
+                  nexusVersion: 'nexus3', 
+                  protocol: 'http', 
+                  repository: 'riyaz', 
+                  version: '1.0-SNAPSHOT'  
+
+
+
 
