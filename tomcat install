@@ -1,1 +1,53 @@
-launch a instance with 2
+launch a instance with t2.micro 2cpu 4gb ram configuration before start ec2 instance
+for tomcat we can use security group as jenkins port number 
+cd /opt
+install java-11 or use yum install java -y 
+wget tomcat-url
+tar -xvf tomcat
+mv tomcat.1.1 to tomcat
+useradd tomcat
+visudo
+tomcat ALL=ALL NOPASSWD=ALL
+chown -R tomcat:tomcat tomcat
+cd tomcat
+give user permission as 777 and give 777 permissions for bin logs file all files 
+chmod 777 webapps
+vi webapps/manager/META-INF/context.xml(add "<!--" at starting value tag ar end of value tag "-->" add )
+vi conf/tomcat-users.xml
+remove give data add this data
+<tomcat-users>
+-->
+
+	<role rolename="manager-gui"/>
+    <role rolename="manager-script"/>
+	<user username="admin" password="admin" roles="manager-gui,manager-script"/>
+
+</tomcat-users>
+cd bin 
+./startup.sh 
+useradd admin
+passwd admin
+plugins should be installed in tomcat :        
+ssh agent
+ec2
+pipeline utility
+mavenintegration
+credentials
+container deploy
+after go to jenkins>manage jenkins>credentials>add credentials>select ssh user name with private key>id as name ur wish>
+and description same as id>in private key >enter directly > in box copy the paste the pem file (used while launcing the instance)
+save and continue
+stage('deploy-dev'){
+            steps{
+                sshagent(['tomcat-credentials(name which is given credentials']){
+                     sh """
+                    scp -o StrictHostKeyChecking=no  target/vprofile-v2.war(war file which is generated)  ec2-user@3.111.55.58(public ip address):/opt/tomcat/webapps/
+                    
+                    ssh -o StrictHostKeyChecking=no  ec2-user@3.111.55.58 /opt/tomcat/bin/shutdown.sh
+                    
+                    ssh -o StrictHostKeyChecking=no  ec2-user@3.111.55.58 /opt/tomcat/bin/startup.sh
+                
+                """
+                }
+            }
+check where webapps present and give cd/name/webaaps
